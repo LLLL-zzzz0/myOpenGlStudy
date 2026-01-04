@@ -12,9 +12,6 @@
 #include "Application/camera/perspectiveCamera.h"
 #include "glframework/geometry.h"
 
-
-GLuint Vao, Program;
-
 std::unique_ptr<Shader> shaderProgram;
 std::unique_ptr<Geometry> pGeometry;
 std::unique_ptr<Texture> pFirstTexture;
@@ -109,7 +106,7 @@ void prepareGLState()
 
 void prepareGeometry()
 {
-	pGeometry.reset(Geometry::createBox(6.0f));
+	pGeometry.reset(Geometry::createSphere(6.0f));
 }
 
 int main()

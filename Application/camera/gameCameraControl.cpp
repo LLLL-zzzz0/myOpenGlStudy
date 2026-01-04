@@ -59,6 +59,12 @@ void GameCameraControl::update()
 	}
 }
 
+void GameCameraControl::resetCamera()
+{
+	CameraControl::resetCamera();
+	m_fPitch = 0.0f;
+}
+
 void GameCameraControl::pitch(float fAngle)
 {
 	m_fPitch += fAngle;

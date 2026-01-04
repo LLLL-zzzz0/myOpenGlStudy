@@ -4,7 +4,7 @@
 class OrthoGraphicCamera :public Camera
 {
 public:
-	OrthoGraphicCamera(const float& fLeft, const float& fRight, const float& fTop, const float& fButtom, const float& fNear, const float& fFar);
+	OrthoGraphicCamera(const float& fLeft, const float& fRight, const float& fTop, const float& fBottom, const float& fNear, const float& fFar);
 	~OrthoGraphicCamera();
 
 	glm::mat4 getProjectionMatrix() override;

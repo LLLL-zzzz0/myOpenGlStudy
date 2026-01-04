@@ -11,6 +11,7 @@ public:
 	void onCursorEvent(const double& dXPos, const double& dYPos)override;
 	void update()override;
 	void setSpeed(const float& fSpeed) { m_fSpeed = fSpeed; }
+	void resetCamera()override;
 private:
 	void pitch(float fAngle);
 	void yaw(float fAngle);

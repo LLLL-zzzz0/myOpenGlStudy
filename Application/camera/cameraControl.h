@@ -17,6 +17,7 @@ public:
 	virtual void onScrollEvent(float fOffset);
 
 	virtual void update();
+	virtual void resetCamera();
 
 	void setCamera(std::unique_ptr<Camera> pCamera) { m_uptrCamera = std::move(pCamera); }
 	void setSensitivity(float fSensitivity) { m_fSensitivity = fSensitivity; }

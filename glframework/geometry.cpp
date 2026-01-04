@@ -1,4 +1,5 @@
 #include "geometry.h"
+#include <vector>
 
 Geometry::Geometry()
 {
@@ -163,10 +164,92 @@ Geometry* Geometry::createBox(float fSize)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pBox->m_uiEbo);
 
+    glBindVertexArray(0);
+
 	return pBox;
 }
 
-Geometry* Geometry::createSphere(float fSize)
+Geometry* Geometry::createSphere(const float& fRadius, const int& iLatLinesNum, const int& iLongLinesNum)
 {
-	return nullptr;
+    Geometry* pSphere = new Geometry();
+
+    //声明变量 pos uv 索引
+    std::vector<GLfloat> vctPosition;
+    std::vector<GLfloat> vctUv;
+    std::vector<GLuint> vctIndices;
+
+    //生成位置，uv
+    for (int i = 0; i < iLatLinesNum; i++)
+    {
+        for (int j = 0; j <= iLongLinesNum; j++)
+        {
+            float fPhi = i * glm::pi<float>() / iLatLinesNum;
+            float fTheta = j * 2 * glm::pi<float>() / iLongLinesNum;
+
+            float fYPos = fRadius * cos(fPhi);
+            float fXPos = fRadius * sin(fPhi) * cos(fTheta);
+            float fZPos = fRadius * sin(fPhi) * sin(fTheta);
+
+            vctPosition.push_back(fYPos);
+            vctPosition.push_back(fXPos);
+            vctPosition.push_back(fZPos);
+
+            float fU = 1.0f - (float)j / (float)iLongLinesNum;
+            float fV = (float)i / (float)iLatLinesNum;
+
+            vctUv.push_back(fU);
+            vctUv.push_back(fV);
+        }
+    }
+
+    //生成顶点索引
+    for (int i = 0; i < iLatLinesNum; i++)
+    {
+        for (int j = 0; j < iLongLinesNum; j++)
+        {
+            int iFirstIndex = i * (iLongLinesNum + 1) + j;
+            int iSecondIndex = iFirstIndex + iLongLinesNum + 1;
+            int iThirdIndex = iFirstIndex + 1;
+            int iFourthIndex = iSecondIndex + 1;
+
+            vctIndices.push_back(iFirstIndex);
+            vctIndices.push_back(iSecondIndex);
+            vctIndices.push_back(iThirdIndex);
+
+            vctIndices.push_back(iThirdIndex);
+            vctIndices.push_back(iSecondIndex);
+            vctIndices.push_back(iFourthIndex);
+        }
+    }
+
+    glGenBuffers(1, &pSphere->m_uiPosVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, pSphere->m_uiPosVbo);
+    glBufferData(GL_ARRAY_BUFFER, vctPosition.size() * sizeof(GLfloat), vctPosition.data(), GL_STATIC_DRAW);
+
+    glGenBuffers(1, &pSphere->m_uiUvVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, pSphere->m_uiUvVbo);
+    glBufferData(GL_ARRAY_BUFFER, vctUv.size() * sizeof(GLfloat), vctUv.data(), GL_STATIC_DRAW);
+
+    glGenBuffers(1, &pSphere->m_uiEbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pSphere->m_uiEbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vctIndices.size() *  sizeof(GLuint), vctIndices.data(), GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &pSphere->m_uiVao);
+    glBindVertexArray(pSphere->m_uiVao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, pSphere->m_uiPosVbo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, pSphere->m_uiUvVbo);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pSphere->m_uiEbo);
+
+    glBindVertexArray(0);
+
+    pSphere->m_uiIndicesCount = vctIndices.size();
+
+	return pSphere;
 }
