@@ -11,14 +11,25 @@
 #include "Application/camera/orthoGraphicCamera.h"
 #include "Application/camera/perspectiveCamera.h"
 #include "glframework/geometry.h"
+#include "glframework/light.h"
+#include "glframework/material.h"
 
 std::unique_ptr<Shader> shaderProgram;
 std::unique_ptr<Geometry> pGeometry;
-std::unique_ptr<Texture> pFirstTexture;
+std::shared_ptr<Texture> pDiffuseTexture;
+std::shared_ptr<Texture> pSpecularTexture;
+
 glm::mat4 transform(1.0f);
 
 std::unique_ptr<Camera> pCamera;
 std::unique_ptr<CameraControl> pCameraControl;
+
+// 新增：光照和材质
+std::unique_ptr<Light> pLight;
+std::unique_ptr<Material> pMaterial;
+
+glm::vec3 vec3LightPos(7.0f, 7.0f, 10.0f);
+glm::vec3 vec3LightColor(0.5f, 0.2f, 0.2f);
 
 void windowResizeCallback(int iWidth, int iHeight)
 {
@@ -51,7 +62,7 @@ void scrollCallBack(double dYOffset)
 
 void prepareShader() 
 {
-	shaderProgram = std::make_unique<Shader>("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
+	shaderProgram = std::make_unique<Shader>("assets/shaders/lighting.vert", "assets/shaders/lighting.frag");
 }
 
 void renderGlDrawElements()
@@ -63,17 +74,33 @@ void renderGlDrawElements()
 	//绑定当前的program
 	shaderProgram->beginShader();
 
-	shaderProgram->setInt("sampler", 0);
-	shaderProgram->setMatrix4x4("transform", transform);
-	shaderProgram->setMatrix4x4("viewMarTrix", pCameraControl->getMyCamera()->getViewMatrix());
-	shaderProgram->setMatrix4x4("projectionMatrix", pCameraControl->getMyCamera()->getProjectionMatrix());
+	//shaderProgram->setInt("sampler", 0);
+	//shaderProgram->setVec3("lightPos", vec3LightPos);
+	//shaderProgram->setVec3("lightColor", vec3LightColor);
+	shaderProgram->setMatrix4x4("model", transform);
+	shaderProgram->setMatrix4x4("view", pCameraControl->getMyCamera()->getViewMatrix());
+	shaderProgram->setMatrix4x4("projection", pCameraControl->getMyCamera()->getProjectionMatrix());
 
+	// 设置相机位置（用于光照计算）
+	shaderProgram->setVec3("viewPos", pCameraControl->getMyCamera()->m_vec3Position);
+
+	// 应用光照
+	if (pLight) 
+	{
+		pLight->applyToShader(*shaderProgram, "light");
+	}
+
+	// 应用材质
+	if (pMaterial) 
+	{
+		pMaterial->applyToShader(*shaderProgram);
+	}
 
 	//绑定VAO
 	GL_CALL(glBindVertexArray(pGeometry->getVao()));
 
 	//绘制  无偏移量
-	GL_CALL(glDrawElements(GL_TRIANGLES, pGeometry->getIndicesCount(), GL_UNSIGNED_INT, 0));
+	GL_CALL(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0));
 	//绘制  带偏移量
 	//GL_CALL(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(sizeof(int) *3)));
 
@@ -85,7 +112,7 @@ void renderGlDrawElements()
 
 void parpareTexture()
 {
-	pFirstTexture = std::make_unique<Texture>("assets/textures/wood.png", 0);
+	pDiffuseTexture = std::make_shared<Texture>("assets/textures/wood.png", 0);
 }
 
 void prepareCamera()
@@ -98,15 +125,40 @@ void prepareCamera()
 	pCameraControl->setCamera(std::move(pCamera));
 }
 
+void prepareLight()
+{
+	pLight = std::make_unique<Light>(Light::DIRECTIONALLIGHT);
+	pLight->m_vec3Driection = glm::normalize(glm::vec3(-0.5f, -1.0f, -0.5f));
+	pLight->m_vec3Ambient = glm::vec3(0.1f, 0.1f, 0.1f);
+	pLight->m_vec3Diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	pLight->m_vec3specular = glm::vec3(1.0f, 1.0f, 1.0f);
+}
+
+void prepareMaterial()
+{
+	//// 创建默认材质
+	//pMaterial = std::make_unique<Material>();
+
+	//// 设置纹理
+	//pMaterial->diffuseTexture = pDiffuseTexture;
+
+	pMaterial.reset(Material::createPlastic());
+}
+
 void prepareGLState()
 {
 	GL_CALL(glEnable(GL_DEPTH_TEST));
 	GL_CALL(glDepthFunc(GL_LESS));
+
+	// 启用背面剔除
+	GL_CALL(glEnable(GL_CULL_FACE));
+	GL_CALL(glCullFace(GL_BACK));
 }
 
 void prepareGeometry()
 {
-	pGeometry.reset(Geometry::createSphere(6.0f));
+	//pGeometry.reset(Geometry::createSphere(6.0f));
+	pGeometry.reset(Geometry::createBox(3.0f));
 }
 
 int main()
@@ -131,6 +183,8 @@ int main()
 	parpareTexture();
 	prepareCamera();
 	prepareGeometry();
+	prepareLight();
+	prepareMaterial();
 	prepareGLState();
 
 	//执行窗体循环
@@ -140,7 +194,22 @@ int main()
 		renderGlDrawElements();
 	}
 
-	pFirstTexture.reset();
+	pMaterial.reset();
+
+	// 2. 释放纹理
+	pDiffuseTexture.reset();
+	pSpecularTexture.reset();
+
+	// 3. 释放几何体（会调用glDeleteBuffers等）
+	pGeometry.reset();
+
+	// 4. 释放着色器
+	shaderProgram.reset();
+
+	// 5. 释放相机和控制器
+	pCameraControl.reset();
+	pCamera.reset(); // 如果pCamera已经从pCameraControl转移
+
 	app->Destroy();
 	
 	return 0;
