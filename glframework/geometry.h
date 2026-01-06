@@ -10,6 +10,7 @@ public:
 
 	static Geometry* createBox(float fSize);
 	static Geometry* createSphere(const float& fRadius, const int & iLatLinesNum = 60, const int& iLongLinesNum = 60);
+	static Geometry* createPlane(float fWidth, float fHeight);
 
 	GLuint getVao()const { return m_uiVao; }
 	uint32_t getIndicesCount()const { return m_uiIndicesCount; }

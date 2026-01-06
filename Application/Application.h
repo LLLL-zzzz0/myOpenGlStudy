@@ -48,6 +48,7 @@ public:
 	void setCursorCallback(CursorCallback callback) { m_cursorCallbackFunc = callback; }
 	void setScrollCallback(ScrollCallback callback) { m_scrollCallbackFunc = callback; }
 
+	GLFWwindow* getWindow()const { return m_pGLFWwindow; }
 
 private:
 	static void framebufferSizeCallback(GLFWwindow* pGLFWWindow, int iWidth, int iHeight);

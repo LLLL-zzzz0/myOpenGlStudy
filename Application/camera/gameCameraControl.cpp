@@ -28,8 +28,8 @@ void GameCameraControl::update()
 	//最终移动方向
 	glm::vec3 vec3Direction(0.0f);
 
-	glm::vec3 vec3Front = glm::cross(m_uptrCamera->m_vec3Up, m_uptrCamera->m_vec3Right);
-	glm::vec3 vec3Right = m_uptrCamera->m_vec3Right;
+	glm::vec3 vec3Front = glm::cross(m_pCamera->m_vec3Up, m_pCamera->m_vec3Right);
+	glm::vec3 vec3Right = m_pCamera->m_vec3Right;
 
 	if (m_hashMapKey.count(GLFW_KEY_W) && m_hashMapKey[GLFW_KEY_W])
 	{
@@ -55,7 +55,7 @@ void GameCameraControl::update()
 	if (glm::length(vec3Direction) != 0)
 	{
 		vec3Direction = glm::normalize(vec3Direction);
-		m_uptrCamera->m_vec3Position += vec3Direction * m_fSpeed;
+		m_pCamera->m_vec3Position += vec3Direction * m_fSpeed;
 	}
 }
 
@@ -74,13 +74,13 @@ void GameCameraControl::pitch(float fAngle)
 		return;
 	}
 
-	glm::mat4 rotateMat = glm::rotate(glm::mat4(1.0f), glm::radians(fAngle), m_uptrCamera->m_vec3Right);
-	m_uptrCamera->m_vec3Up = rotateMat * glm::vec4(m_uptrCamera->m_vec3Up, 0.0f);
+	glm::mat4 rotateMat = glm::rotate(glm::mat4(1.0f), glm::radians(fAngle), m_pCamera->m_vec3Right);
+	m_pCamera->m_vec3Up = rotateMat * glm::vec4(m_pCamera->m_vec3Up, 0.0f);
 }
 
 void GameCameraControl::yaw(float fAngle)
 {
 	glm::mat4 rotateMat = glm::rotate(glm::mat4(1.0f), glm::radians(fAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-	m_uptrCamera->m_vec3Up = rotateMat * glm::vec4(m_uptrCamera->m_vec3Up, 0.0f);
-	m_uptrCamera->m_vec3Right = rotateMat * glm::vec4(m_uptrCamera->m_vec3Right, 0.0f);
+	m_pCamera->m_vec3Up = rotateMat * glm::vec4(m_pCamera->m_vec3Up, 0.0f);
+	m_pCamera->m_vec3Right = rotateMat * glm::vec4(m_pCamera->m_vec3Right, 0.0f);
 }

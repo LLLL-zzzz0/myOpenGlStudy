@@ -20,5 +20,5 @@ glm::mat4 PerspectiveCamera::getProjectionMatrix()
 void PerspectiveCamera::scale(float fDeltaScale)
 {
 	glm::vec3 vec3Front = glm::cross(m_vec3Up, m_vec3Right);
-	m_vec3Position -= (vec3Front * fDeltaScale);
+	m_vec3Position += (vec3Front * fDeltaScale);
 }

@@ -23,6 +23,8 @@ public:
 
 	void setMatrix4x4(const std::string& strName, glm::mat4 value);
 
+	void setMatrix3x3(const std::string& strName, glm::mat3 value);
+
 	GLuint getMyProgramId() { return m_programID; }
 
 private:

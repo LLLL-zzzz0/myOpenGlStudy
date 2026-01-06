@@ -1,5 +1,6 @@
 #include "shader.h"
 #include "shader.h"
+#include "shader.h"
 #include "../wrapper/checkError.h"
 
 #include <string>
@@ -59,6 +60,15 @@ void Shader::setMatrix4x4(const std::string& strName, glm::mat4 value)
 
 	//通过loaction更新uniform变量的值
 	GL_CALL(glUniformMatrix4fv(uiPos, 1, GL_FALSE, glm::value_ptr(value)));
+}
+
+void Shader::setMatrix3x3(const std::string& strName, glm::mat3 value)
+{
+	//通过名称拿到Uniform变量的位置
+	GLuint uiPos = GL_CALL(glGetUniformLocation(m_programID, strName.c_str()));
+
+	//通过loaction更新uniform变量的值
+	GL_CALL(glUniformMatrix3fv(uiPos, 1, GL_FALSE, glm::value_ptr(value)));
 }
 
 void Shader::checkCompileErrors(GLuint shader, std::string type)

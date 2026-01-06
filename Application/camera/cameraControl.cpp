@@ -76,7 +76,7 @@ void CameraControl::update()
 
 void CameraControl::resetCamera()
 {
-	m_uptrCamera->m_vec3Position = glm::vec3(0.0f, 0.0f, 10.0f);
-	m_uptrCamera->m_vec3Up = glm::vec3(0.0f, 1.0f, 0.0f);
-	m_uptrCamera->m_vec3Right = glm::vec3(1.0f, 0.0f, 0.0f);
+	m_pCamera->m_vec3Position = glm::vec3(0.0f, 0.0f, 10.0f);
+	m_pCamera->m_vec3Up = glm::vec3(0.0f, 1.0f, 0.0f);
+	m_pCamera->m_vec3Right = glm::vec3(1.0f, 0.0f, 0.0f);
 }

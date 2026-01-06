@@ -19,10 +19,10 @@ public:
 	virtual void update();
 	virtual void resetCamera();
 
-	void setCamera(std::unique_ptr<Camera> pCamera) { m_uptrCamera = std::move(pCamera); }
+	void setCamera(std::shared_ptr<Camera> pCamera) { m_pCamera = pCamera; }
 	void setSensitivity(float fSensitivity) { m_fSensitivity = fSensitivity; }
 	void setScaleSpeed(float fScaleSpeed) { m_fScaleSpeed = fScaleSpeed; }
-	Camera* getMyCamera() { return m_uptrCamera.get(); }
+	Camera* getMyCamera() { return m_pCamera.get(); }
 protected:
 	//1. 鼠标按键状态
 	bool m_bLeftMouseDown = false;
@@ -40,7 +40,7 @@ protected:
 	std::unordered_map<int, bool> m_hashMapKey;
 
 	//5 当前控制的摄像机
-	std::unique_ptr<Camera> m_uptrCamera;
+	std::shared_ptr<Camera> m_pCamera;
 
 	//6.相机缩放速度
 	float m_fScaleSpeed = 0.2f;
