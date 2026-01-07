@@ -33,6 +33,7 @@ std::shared_ptr<DirectionalLight> pDirectionalLight;
 std::shared_ptr<AmbientLight> pAmbientLight;
 std::shared_ptr<PointLight> pPointLight;
 std::shared_ptr<SpotLight> pSpotLight;
+std::shared_ptr<Scene> pScene;
 
 void windowResizeCallback(int iWidth, int iHeight)
 {
@@ -75,7 +76,9 @@ void prepareCamera()
 
 void prepare()
 {
+	pScene = Scene::Create();
 	pRenderer = std::make_unique<Renderer>();
+	//std::shared_ptr<SpotLight> pSpotLight = SpotLight::Create();
 
 	//创建geometry
 	std::shared_ptr<Geometry> pGeometry(Geometry::createBox(4.0f));
@@ -95,26 +98,38 @@ void prepare()
 	std::shared_ptr<Mesh> pWhiteMesh = Mesh::Create(pWhiteLight, pWhiteMaterial);
 
 	pWhiteMesh->setPosition(glm::vec3(3.0f, 0.5f, 0.5f));
-	pWhiteMesh->setParent(pMesh);
 
 	vctMesh.push_back(pMesh);
 	vctMesh.push_back(pWhiteMesh);
 
 	pPointLight = PointLight::Create();
-	pPointLight->setPosition(pWhiteMesh->getPosition());
+	pPointLight->setPosition(glm::vec3(0.0f,0.0f,4.0f));
+	pPointLight->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 	pPointLight->setK2(0.017f);
 	pPointLight->setK1(0.07f);
 	pPointLight->setKc(1.0f);
 
 	pSpotLight = SpotLight::Create();
 	pSpotLight->setPosition(pWhiteMesh->getPosition());
-	pSpotLight->setTargetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
+	pSpotLight->rotateY(90.0f);
 	pSpotLight->setInnerAngle(30.0f);
 	pSpotLight->setOuterAngle(60.0f);
 
-	pDirectionalLight = std::make_shared<DirectionalLight>();
+	pDirectionalLight = DirectionalLight::Create();
+	pDirectionalLight->setPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+	pDirectionalLight->rotateY(-90.0f);
+	pDirectionalLight->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
+
 	pAmbientLight = std::make_shared<AmbientLight>();
-	pAmbientLight->setColor(glm::vec3(0.1f));
+	pAmbientLight->setColor(glm::vec3(0.2f));
+
+	pMesh->setParent(pScene);
+	pWhiteMesh->setParent(pMesh);
+	pSpotLight->setParent(pMesh);
+	pPointLight->setParent(pScene);
+	pDirectionalLight->setParent(pScene);
+	pScene->categorizedStorage();
+	pScene->setAmbientLight(pAmbientLight);
 }
 
 void initIMGUI()
@@ -149,10 +164,13 @@ int main()
 	//执行窗体循环
 	while (app->Update())
 	{
+		//vctMesh[0]->rotateY(0.005f);
 		pCameraControl->update();
+
 		//pRenderer->render(vctMesh, pCamera, pDirectionalLight, pAmbientLight);
 		//pRenderer->render(vctMesh, pCamera, pPointLight, pAmbientLight);
-		pRenderer->render(vctMesh, pCamera, pSpotLight, pAmbientLight);
+		//pRenderer->render(vctMesh, pCamera, pSpotLight, pAmbientLight);
+		pRenderer->render(pScene, pCamera);
 	}
 
 	// 5. 释放相机和控制器
@@ -164,6 +182,7 @@ int main()
 	pSpotLight.reset();
 	pAmbientLight.reset();
 	pRenderer.reset();
+	pScene.reset();
 	for (int i = 0; i < vctMesh.size(); i++)
 	{
 		vctMesh[i].reset();

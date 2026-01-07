@@ -1,12 +1,17 @@
 #version 330 core
 out vec4 FragColor;
 
+#define MAX_LIGHT_NUM 5
+
 uniform sampler2D sampler;
 uniform sampler2D specularMaskSampler;
 
 uniform vec3 cameraPosition;
 uniform vec3 ambientColor;
-uniform float shiness; 
+uniform float shiness;
+uniform int spotLightNum;
+uniform int pointLightNum;
+uniform int dirLightNum;
 
 in vec2 uv;
 in vec3 Normal; 
@@ -39,9 +44,9 @@ struct SpotLight
     float specularIntensity;
 };
 
-uniform SpotLight spotLight;
-uniform DirectionalLight directionalLight;
-uniform PointLight pointLight;
+uniform SpotLight spotLights[MAX_LIGHT_NUM];
+uniform DirectionalLight directionalLights[MAX_LIGHT_NUM];
+uniform PointLight pointLights[MAX_LIGHT_NUM];
 
 //计算漫反射光照
 vec3 calculateDiffuse(vec3 lightColor, vec3 objectColor, vec3 lightDir, vec3 normal)
@@ -67,9 +72,9 @@ vec3 calculateSpecular(vec3 lightColor, vec3 lightDir, vec3 normal, vec3 viewDir
     //控制光斑大小
     specular = pow(specular, shiness);
 
-   // float specularMask = texture(specularMaskSampler, uv).r;
+    float specularMask = texture(specularMaskSampler, uv).r;
 
-    vec3 specularColor = lightColor * specular * flag * intensity;
+    vec3 specularColor = lightColor * specular * flag * intensity * specularMask;
 
     return specularColor;
 }
@@ -131,13 +136,22 @@ void main()
 
     vec3 objectColor = texture(sampler, uv).xyz;
     vec3 norm1N = normalize(Normal);
-    vec3 lightDir1N = normalize(worldPosition - spotLight.position);
     vec3 viewDir1N = normalize(worldPosition - cameraPosition);
-    vec3 targetDirection1N = normalize(spotLight.targetDirection);
 
-    resultColor += calculateSpotLight(spotLight, norm1N, viewDir1N);
-    //resultColor += calculateDirectionalLight(directionalLight, norm1N, viewDir1N);
-   // resultColor += calculatePointLight(pointLight, norm1N, viewDir1N);
+    for(int i = 0; i < spotLightNum; i++)
+    {
+        resultColor += calculateSpotLight(spotLights[i], norm1N, viewDir1N);
+    }
+
+    for(int i = 0; i < dirLightNum; i++)
+    {
+        resultColor += calculateDirectionalLight(directionalLights[i], norm1N, viewDir1N);
+    }
+
+    for(int i = 0; i < pointLightNum; i++)
+    {
+        resultColor += calculatePointLight(pointLights[i], norm1N, viewDir1N);
+    }
 
     vec3 ambientColor = objectColor * ambientColor;
 

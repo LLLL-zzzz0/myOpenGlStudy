@@ -1,17 +1,36 @@
 #pragma once
 
 #include "light.h"
+#include "../object.h"
+#include <iostream>
 
-class DirectionalLight :public Light
+class DirectionalLight :public Light,public Object<DirectionalLight>
 {
 public:
-	DirectionalLight();
-	~DirectionalLight();
-	void setDirection(glm::vec3 vec3Direction) 
+	using Ptr = std::shared_ptr<DirectionalLight>;
+
+	static Ptr Create()
 	{
-		m_vec3Direction = vec3Direction;
+		return Ptr(new DirectionalLight());
 	}
-	glm::vec3 getDirection() { return m_vec3Direction; }
+
+	~DirectionalLight();
+	LightType getType() const override
+	{
+		return LightType::Directional;
+	}
+
+	glm::vec3 getWorldDirection() const
+	{
+		return glm::normalize(glm::vec3(getWorldMatrix() * glm::vec4(0, 0, -1, 0)));
+	}
+
+protected:
+	DirectionalLight():
+		Object(ObjectType::LIGHT)
+	{
+		type = LightType::Directional;
+	}
 private:
-	glm::vec3 m_vec3Direction{ -1.0f, -1.0f, -1.0f };
+	
 };

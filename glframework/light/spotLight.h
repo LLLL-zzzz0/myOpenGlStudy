@@ -2,24 +2,45 @@
 
 #include "light.h"
 #include "../object.h"
+#include <iostream>
 
-class SpotLight :public Light, public Object<SpotLight>
+class SpotLight :public Light,public Object<SpotLight>
 {
 public:
-	friend class Object<SpotLight>;
+	using Ptr = std::shared_ptr<SpotLight>;
 
+	static Ptr Create()
+	{
+		return Ptr(new SpotLight());
+	}
 	~SpotLight();
-	void setTargetDirection(glm::vec3 vec3TargetDirection) { m_vec3TargetDirection = vec3TargetDirection; }
-	glm::vec3 getTargetDirection()const { return m_vec3TargetDirection; }
 	void setInnerAngle(const float& fAngle) { m_fInnerAngle = fAngle; }
 	float getInnerAngle() { return m_fInnerAngle; }
 	void setOuterAngle(const float& fAngle) { m_fOuterAngle = fAngle; }
 	float getOuterAngle() { return m_fOuterAngle; }
 
+	LightType getType() const override
+	{
+		return LightType::Spot;
+	}
+
+	glm::vec3 getWorldPosition() const
+	{
+		return glm::vec3(getWorldMatrix()[3]);
+	}
+
+	glm::vec3 getWorldDirection() const
+	{
+		return glm::normalize(glm::vec3(getWorldMatrix() * glm::vec4(0, 0, -1, 0)));
+	}
+
 protected:
-	SpotLight() = default;
+	SpotLight() : Object(ObjectType::LIGHT)
+	{
+		type = LightType::Spot;
+	}
+
 private:
-	glm::vec3 m_vec3TargetDirection{-1.0f, -1.0f, -1.0f};
 	float m_fInnerAngle{ 0.0f };
 	float m_fOuterAngle{ 0.0f };
 };

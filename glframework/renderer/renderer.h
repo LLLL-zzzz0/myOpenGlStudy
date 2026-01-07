@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_LIGHT_NUM 5
+
 #include "../core.h"
 #include <vector>
 #include "../../Application/camera/camera.h"
@@ -10,6 +12,7 @@
 #include "../mesh.h"
 #include "../../wrapper/checkError.h"
 #include "../shader.h"
+#include "../scene.h"
 
 class Renderer
 {
@@ -39,6 +42,8 @@ public:
 		std::shared_ptr<SpotLight> pSpotLight,
 		std::shared_ptr<AmbientLight> pAmbientLight
 	);
+
+	void render(std::shared_ptr<Scene> pScene, std::shared_ptr<Camera> pCamera);
 
 	
 private:
