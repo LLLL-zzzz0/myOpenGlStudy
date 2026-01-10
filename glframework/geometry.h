@@ -6,6 +6,12 @@ class Geometry
 {
 public:
 	Geometry();
+	Geometry(
+		const std::vector<float>& vctPositions,
+		const std::vector<float>& vctNormals,
+		const std::vector<float>& vctUvs,
+		const std::vector<unsigned int>& vctIndices
+	);
 	~Geometry();
 
 	static Geometry* createBox(float fSize);

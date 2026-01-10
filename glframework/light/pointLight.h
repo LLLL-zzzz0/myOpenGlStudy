@@ -20,11 +20,6 @@ public:
 	float getK1()const { return m_fK1; }
 	float getKc()const { return m_fKc; }
 
-	glm::vec3 getWorldPosition() const
-	{
-		return glm::vec3(getWorldMatrix()[3]);
-	}
-
 	LightType getType() const override
 	{
 		return LightType::Point;

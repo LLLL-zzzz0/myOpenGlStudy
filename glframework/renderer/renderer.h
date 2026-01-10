@@ -36,6 +36,15 @@ public:
 		std::shared_ptr<AmbientLight> pAmbientLight
 	);
 
+	void renderMesh(
+		std::shared_ptr<Mesh> pMesh,
+		std::shared_ptr<Camera> pCamera,
+		const std::vector<std::shared_ptr<SpotLight>>& vctSpotLight,
+		const std::vector<std::shared_ptr<DirectionalLight>>& vctDirectionalLight,
+		const std::vector<std::shared_ptr<PointLight>>& vctPointLight,
+		std::shared_ptr<AmbientLight> pAmbientLight
+	);
+
 	void render(
 		const std::vector<std::shared_ptr<Mesh>>& vctMesh,
 		std::shared_ptr<Camera> pCamera,
@@ -45,9 +54,15 @@ public:
 
 	void render(std::shared_ptr<Scene> pScene, std::shared_ptr<Camera> pCamera);
 
+	void setClearColor(glm::vec3 vec3Color);
+
 	
 private:
 	Shader* selectShader(MaterialType materialType);
+	void setDepthState(std::shared_ptr<Material> pMaterial);
+	void setPolygomOffsetState(std::shared_ptr<Material> pMaterial);
+	void setStencilState(std::shared_ptr<Material> pMaterial);
+	void setBlendState(std::shared_ptr<Material> pMaterial);
 
 	std::unique_ptr<Shader> m_pPhongShader;
 	std::unique_ptr<Shader> m_pWhiteShader;

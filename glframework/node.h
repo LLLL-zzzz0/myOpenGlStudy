@@ -1,7 +1,9 @@
+#pragma once
 #include "object.h"
 
 class Node : public Object<Node>
 {
+public:
 	using Ptr = std::shared_ptr<Node>;
 
 	static Ptr Create()

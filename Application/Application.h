@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-#define app Application::getInstance()
+#define appInstance Application::getInstance()
 
 /*
     µ¥ÀıÀà

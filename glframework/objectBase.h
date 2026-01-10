@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include "core.h"
+#include "event/eventBus.h"
 
 // ===============================
 // Object Type
@@ -67,6 +68,10 @@ public:
 		{
 			newParent->addChildInternal(self);
 		}
+		Event e;
+		e.type = EventType::HierarchyChanged;
+		e.sender = this;
+		EventBus::instance().emit(e);
 
 		// 通知派生类
 		markDirtyRecursive();

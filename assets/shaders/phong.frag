@@ -13,6 +13,8 @@ uniform int spotLightNum;
 uniform int pointLightNum;
 uniform int dirLightNum;
 
+uniform float opacity; //Í¸Ã÷¶È
+
 in vec2 uv;
 in vec3 Normal; 
 in vec3 worldPosition;
@@ -73,8 +75,9 @@ vec3 calculateSpecular(vec3 lightColor, vec3 lightDir, vec3 normal, vec3 viewDir
     specular = pow(specular, shiness);
 
     float specularMask = texture(specularMaskSampler, uv).r;
-
     vec3 specularColor = lightColor * specular * flag * intensity * specularMask;
+
+    //vec3 specularColor = lightColor * specular * flag * intensity;
 
     return specularColor;
 }
@@ -134,7 +137,6 @@ void main()
 {
     vec3 resultColor = vec3(0.0, 0.0, 0.0);
 
-    vec3 objectColor = texture(sampler, uv).xyz;
     vec3 norm1N = normalize(Normal);
     vec3 viewDir1N = normalize(worldPosition - cameraPosition);
 
@@ -153,9 +155,12 @@ void main()
         resultColor += calculatePointLight(pointLights[i], norm1N, viewDir1N);
     }
 
+    vec3 objectColor = texture(sampler, uv).xyz;
+    float fAlpha =  texture(sampler, uv).a;
+
     vec3 ambientColor = objectColor * ambientColor;
 
     vec3 finalColor = resultColor  + ambientColor;
     
-    FragColor = vec4(finalColor, 1.0f);
+    FragColor = vec4(finalColor, fAlpha * opacity);
 }

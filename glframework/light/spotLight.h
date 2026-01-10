@@ -24,16 +24,6 @@ public:
 		return LightType::Spot;
 	}
 
-	glm::vec3 getWorldPosition() const
-	{
-		return glm::vec3(getWorldMatrix()[3]);
-	}
-
-	glm::vec3 getWorldDirection() const
-	{
-		return glm::normalize(glm::vec3(getWorldMatrix() * glm::vec4(0, 0, -1, 0)));
-	}
-
 protected:
 	SpotLight() : Object(ObjectType::LIGHT)
 	{
