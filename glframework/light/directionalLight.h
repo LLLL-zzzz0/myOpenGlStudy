@@ -1,10 +1,8 @@
 #pragma once
 
 #include "light.h"
-#include "../object.h"
-#include <iostream>
 
-class DirectionalLight :public Light,public Object<DirectionalLight>
+class DirectionalLight :public Light
 {
 public:
 	using Ptr = std::shared_ptr<DirectionalLight>;
@@ -15,7 +13,7 @@ public:
 	}
 
 	~DirectionalLight();
-	LightType getType() const override
+	LightType getLightType() const override
 	{
 		return LightType::Directional;
 	}
@@ -27,9 +25,8 @@ public:
 
 protected:
 	DirectionalLight():
-		Object(ObjectType::LIGHT)
+		Light(LightType::Directional)
 	{
-		type = LightType::Directional;
 	}
 private:
 	

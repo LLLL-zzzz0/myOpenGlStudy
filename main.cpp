@@ -246,23 +246,8 @@ void renderIMGUI()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void setModelBlend(std::shared_ptr<ObjectBase> pNode, bool blend, float opacity) {
-	if (auto pMesh = std::dynamic_pointer_cast<Mesh>(pNode))
-	{
-		auto pMaterial = pMesh->getMaterial();
-		pMaterial->m_bBlend = blend;
-		pMaterial->m_fOpacity = opacity;
-		pMaterial->m_bDepthWrite = false;
-	}
-
-	auto children = pNode->getChildren();
-	for (int i = 0; i < children.size(); i++) 
-	{
-		setModelBlend(children[i], blend, opacity);
-	}
-}
-
-void prepareBlend() {
+void prepareBlend() 
+{
 	pScene = Scene::Create();
 	pScene->setSelf(pScene);
 	pScene->initEvent();
@@ -271,7 +256,8 @@ void prepareBlend() {
 
 	//1 背包模型
 	auto model = AssimpLoder::load("assets/fbx/bag/backpack.obj");
-	setModelBlend(model, true, 0.2);
+	model->setModelBlend(true, 0.4f);
+	//setModelBlend(model, true, 0.4);
 	model->setParent(pScene);
 
 	//2 实体平面
@@ -289,7 +275,8 @@ void prepareBlend() {
 	planeMatTrans->setSpecularMaskTexture(pDefaultspmasktexture);
 	planeMatTrans->setDiffuseTexture(Texture::createTexture("assets/textures/wall.jpg", 0));
 	planeMatTrans->m_bBlend = true;
-	planeMatTrans->m_fOpacity = 0.1;
+	planeMatTrans->m_bDepthWrite = false;
+	planeMatTrans->m_fOpacity = 0.5;
 
 	auto planeMeshTrans =  Mesh::Create(planeGeoTrans, planeMatTrans);
 	planeMeshTrans->setPosition(glm::vec3(0.0f, 0.0f, -6.0f));
@@ -342,13 +329,8 @@ int main()
 	while (appInstance->Update())
 	{
 		pRenderer->setClearColor(clearColor);
-		//vctMesh[0]->rotateY(0.005f);
 		pCameraControl->update();
-
-		//pRenderer->render(vctMesh, pCamera, pDirectionalLight, pAmbientLight);
-		//pRenderer->render(vctMesh, pCamera, pPointLight, pAmbientLight);
-		//pRenderer->render(vctMesh, pCamera, pSpotLight, pAmbientLight);
-		pRenderer->render(pScene, pCamera);
+		pRenderer->render(pScene.get(), pCamera.get());
 		renderIMGUI();
 	}
 

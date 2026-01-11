@@ -1,16 +1,16 @@
-#include "phongMaterial.h"
-#include "phongMaterial.h"
+#include "opacityMaskMaterial.h"
 
-PhongMaterial::PhongMaterial()
+OpacityMaskMaterial::OpacityMaskMaterial() 
 {
-	m_enumType = MaterialType::PhongMaterial;
+	m_enumType = MaterialType::OpacityMaskMaterial;
 }
 
-PhongMaterial::~PhongMaterial()
+OpacityMaskMaterial::~OpacityMaskMaterial() 
 {
+
 }
 
-void PhongMaterial::bind(
+void OpacityMaskMaterial::bind(
 	Shader* pShader,
 	Camera* pCamera,
 	glm::mat3 normalMatrix,
@@ -21,19 +21,18 @@ void PhongMaterial::bind(
 )
 {
 	pShader->setInt("sampler", 0);
-	this->getDiffuseTexture()->bind();
+	m_pDiffuseTexture->bind();
 
-	if (this->getSpecularMaskTexture())
-	{
-		pShader->setInt("specularMaskSampler", 1);
-		this->getSpecularMaskTexture()->bind();
-	}
+	
+	pShader->setInt("specularMaskSampler", 1);
+	m_pOpacityMaskTexture->bind();
+
 
 	setShaderDirLight(pShader, vctDirectionalLight);
 	setShaderSpotLight(pShader, vctSpotLight);
 	setShaderPointLight(pShader, vctPointLight);
 
-	pShader->setFloat("shiness", this->getShiness());
+	pShader->setFloat("shiness", m_fShiness);
 
 	pShader->setVec3("ambientColor", pAmbientLight->getColor());
 
@@ -43,6 +42,5 @@ void PhongMaterial::bind(
 	//¼ÆËãNormalMatrix
 	pShader->setMatrix3x3("normalMatrix", normalMatrix);
 
-	pShader->setFloat("opacity", this->m_fOpacity);
+	pShader->setFloat("opacity", m_fOpacity);
 }
-

@@ -1,8 +1,5 @@
-#version 330 core
+#version 460 core
 out vec4 FragColor;
-
-in vec2 uv;
-in vec3 Normal; 
 
 void main()
 {

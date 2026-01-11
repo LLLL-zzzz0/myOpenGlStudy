@@ -4,7 +4,7 @@ out vec4 FragColor;
 #define MAX_LIGHT_NUM 5
 
 uniform sampler2D sampler;
-uniform sampler2D specularMaskSampler;
+uniform sampler2D opacityMaskSampler;
 
 uniform vec3 cameraPosition;
 uniform vec3 ambientColor;
@@ -74,10 +74,7 @@ vec3 calculateSpecular(vec3 lightColor, vec3 lightDir, vec3 normal, vec3 viewDir
     //控制光斑大小
     specular = pow(specular, shiness);
 
-    float specularMask = texture(specularMaskSampler, uv).r;
-    vec3 specularColor = lightColor * specular * flag * intensity * specularMask;
-
-    //vec3 specularColor = lightColor * specular * flag * intensity;
+    vec3 specularColor = lightColor * specular * flag * intensity;
 
     return specularColor;
 }
@@ -156,7 +153,7 @@ void main()
     }
 
     vec3 objectColor = texture(sampler, uv).xyz;
-    float fAlpha =  texture(sampler, uv).a;
+    float fAlpha =  texture(opacityMaskSampler, uv).r;
 
     vec3 ambientColor = objectColor * ambientColor;
 

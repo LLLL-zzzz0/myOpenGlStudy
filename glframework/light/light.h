@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core.h"
+#include "../object.h"
 
 enum class LightType
 {
@@ -9,7 +10,7 @@ enum class LightType
 	Spot
 };
 
-class Light
+class Light:public Object<Light>
 {
 public:
 	Light() = default;
@@ -25,10 +26,14 @@ public:
 	glm::vec3 getColor() { return m_vec3Color; }
 	float getSpecularIntensity() { return m_fSpecularIntensity; }
 
-	virtual LightType getType() const = 0;
+	virtual LightType getLightType() const = 0;
 
 protected:
-	LightType type;
+	explicit Light(LightType t)
+		: Object(ObjectType::LIGHT), m_lightType(t) {
+	}
+
+	LightType m_lightType;
 	glm::vec3 m_vec3Color{ 1.0f, 1.0f, 1.0f };
 	float m_fSpecularIntensity{ 1.0f };
 };

@@ -1,11 +1,23 @@
 #pragma once
 
+#define MAX_LIGHT_NUM 5
+
 #include "../core.h"
+#include "../../Application/camera/camera.h"
+#include "../light/directionalLight.h"
+#include "../light/ambientLight.h"
+#include "../light/pointLight.h"
+#include "../light/spotLight.h"
+#include "../shader.h"
+#include <vector>
+#include "../../wrapper/checkError.h"
 
 enum class MaterialType
 {
     PhongMaterial,
-    WhiteMaterial
+    WhiteMaterial,
+    DepthMaterial,
+    OpacityMaskMaterial
 };
 
 class Material 
@@ -14,6 +26,19 @@ public:
     Material();
     virtual ~Material();
     MaterialType getMaterialType();
+	virtual void bind(
+        Shader* pShader,
+        Camera* pCamera,
+        glm::mat3 normalMatrix,
+		const std::vector<SpotLight*>& vctSpotLight,
+		const std::vector<DirectionalLight*>& vctDirectionalLight,
+		const std::vector<PointLight*>& vctPointLight,
+		AmbientLight* pAmbientLight
+    )
+    {
+    }
+
+    void setOpenGLStatus();
 
     //深度检测相关
 	bool          m_bDepthTest{ true };
@@ -39,7 +64,19 @@ public:
 	unsigned int  m_uiDBlendFactor{GL_ONE_MINUS_SRC_ALPHA};
 
     float         m_fOpacity{ 1.0f };
+    //面剔除
+    bool          m_bFaceCulling{ false };
+	unsigned int  m_uiFrontFace{ GL_CCW };
+	unsigned int  m_uiCullFace{ GL_BACK };
 
 protected:
     MaterialType m_enumType{ MaterialType::PhongMaterial };
+	void setShaderSpotLight(Shader* pShader, const std::vector<SpotLight*>& vctSpotLight);
+	void setShaderDirLight(Shader* pShader, const std::vector<DirectionalLight*>& vctDirectionalLight);
+	void setShaderPointLight(Shader* pShader, const std::vector<PointLight*>& vctPointLight);
+    void setDepthState();
+    void setPolygomOffsetState();
+    void setStencilState();
+    void setBlendState();
+    void setFaceCulling();
 };

@@ -15,8 +15,8 @@ public:
 		return Ptr(new Mesh(pGeometry, pMaterial));
 	}
 	~Mesh();
-	std::shared_ptr<Geometry> getGeometry() const { return m_pGeometry; }
-	std::shared_ptr<Material> getMaterial() const { return m_pMaterial; }
+	 Geometry* getGeometry() const { return m_pGeometry.get(); }
+	 Material* getMaterial() const { return m_pMaterial.get(); }
 protected:
 	Mesh(std::shared_ptr<Geometry> pGeometry, std::shared_ptr<Material> pMaterial);
 

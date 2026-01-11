@@ -1,9 +1,8 @@
 #pragma once
 
 #include "light.h"
-#include "../object.h"
 
-class PointLight :public Light, public Object<PointLight>
+class PointLight :public Light
 {
 public:
 	using Ptr = std::shared_ptr<PointLight>;
@@ -20,15 +19,15 @@ public:
 	float getK1()const { return m_fK1; }
 	float getKc()const { return m_fKc; }
 
-	LightType getType() const override
+	LightType getLightType() const override
 	{
 		return LightType::Point;
 	}
 
 protected:
-	PointLight():Object(ObjectType::LIGHT)
+	PointLight()
+		: Light(LightType::Point)
 	{
-		type = LightType::Point;
 	}
 
 private:

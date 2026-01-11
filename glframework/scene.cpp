@@ -8,43 +8,46 @@ void Scene::categorizedStorage()
 	m_vctTransparentMeshs.clear();
 	m_vctOpaqueMeshs.clear();
 
-	std::queue<std::shared_ptr<ObjectBase>> queueObject;
-	queueObject.push(shared_from_this());
-	while (queueObject.size())
+	categorizedStorage(shared_from_this().get());
+}
+
+void Scene::categorizedStorage(ObjectBase* pObject)
+{
+	switch (pObject->getObjectType())
 	{
-		if (auto plight = std::dynamic_pointer_cast<SpotLight>(queueObject.front()))
+	case ObjectType::LIGHT:
+	{
+		auto light = static_cast<Light*>(pObject);
+		switch (light->getLightType())
 		{
-			m_vctSpotLights.push_back(plight);
+		case LightType::Spot:
+			m_vctSpotLights.push_back(static_cast<SpotLight*>(light));
+			break;
+		case LightType::Directional:
+			m_vctDirLights.push_back(static_cast<DirectionalLight*>(light));
+			break;
+		case LightType::Point:
+			m_vctPointLights.push_back(static_cast<PointLight*>(light));
+			break;
 		}
+		break;
+	}
+	case ObjectType::MESH:
+	{
+		auto mesh = static_cast<Mesh*>(pObject);
+		auto mat = mesh->getMaterial();
+		if (mat->m_bBlend)
+			m_vctTransparentMeshs.push_back(mesh);
+		else
+			m_vctOpaqueMeshs.push_back(mesh);
+		break;
+	}
+	default:
+		break;
+	}
 
-		if (auto plight = std::dynamic_pointer_cast<DirectionalLight>(queueObject.front()))
-		{
-			m_vctDirLights.push_back(plight);
-		}
-
-		if (auto plight = std::dynamic_pointer_cast<PointLight>(queueObject.front()))
-		{
-			m_vctPointLights.push_back(plight);
-		}
-
-		if (auto pMesh = std::dynamic_pointer_cast<Mesh>(queueObject.front()))
-		{
-			std::shared_ptr<Material> pMaterial = pMesh->getMaterial();
-			if (pMaterial->m_bBlend)
-			{
-				m_vctTransparentMeshs.push_back(pMesh);
-			}
-			else
-			{
-				m_vctOpaqueMeshs.push_back(pMesh);
-			}
-		}
-
-		for (auto obj : queueObject.front()->getChildren())
-		{
-			queueObject.push(obj);
-		}
-
-		queueObject.pop();
+	for (auto obj : pObject->getChildren())
+	{
+		categorizedStorage(obj.get());
 	}
 }

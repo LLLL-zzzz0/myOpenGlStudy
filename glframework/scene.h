@@ -49,7 +49,9 @@ public:
 	//如果多次调用影响性能
 	void categorizedStorage();
 
-	void categorizedStorageIfNeeded(std::shared_ptr<Camera> pCamera)
+	void categorizedStorage(ObjectBase* pObject);
+
+	void categorizedStorageIfNeeded(Camera* pCamera)
 	{
 		if (!m_structureDirty)
 		{
@@ -61,12 +63,12 @@ public:
 		m_structureDirty = false;
 	}
 
-	void sortTransparentMeshs(std::shared_ptr<Camera> pCamera)
+	void sortTransparentMeshs(Camera* pCamera)
 	{
 		std::sort(
 			m_vctTransparentMeshs.begin(),
 			m_vctTransparentMeshs.end(),
-			[pCamera](PtrMesh pMeshA, PtrMesh pMeshB)
+			[pCamera](Mesh* pMeshA, Mesh* pMeshB)
 			{
 				auto PositionA = pMeshA->getWorldPosition();
 				auto PositionB = pMeshB->getWorldPosition();
@@ -80,20 +82,20 @@ public:
 		);
 	}
 
-	const std::vector<PtrSpotLight>& getSpotLights() { return m_vctSpotLights; }
-	const std::vector<PtrPointLight>& getPointLights() { return m_vctPointLights; }
-	const std::vector<PtrDirLight>& getDirLights() { return m_vctDirLights; }
-	const std::vector<PtrMesh>& getOpaqueMeshs() { return m_vctOpaqueMeshs; }
-	const std::vector<PtrMesh>& getTransparentMeshs() { return m_vctTransparentMeshs; }
+	const std::vector<SpotLight*>& getSpotLights() { return m_vctSpotLights; }
+	const std::vector<PointLight*>& getPointLights() { return m_vctPointLights; }
+	const std::vector<DirectionalLight*>& getDirLights() { return m_vctDirLights; }
+	const std::vector<Mesh*>& getOpaqueMeshs() { return m_vctOpaqueMeshs; }
+	const std::vector<Mesh*>& getTransparentMeshs() { return m_vctTransparentMeshs; }
 
 	void setAmbientLight(std::shared_ptr<AmbientLight> pAmbientLight) 
 	{
 		m_pAmbientLight = pAmbientLight;
 	}
 
-	std::shared_ptr<AmbientLight> getAmbientLight()
+	AmbientLight* getAmbientLight() const
 	{
-		return m_pAmbientLight;
+		return m_pAmbientLight.get();
 	}
 
 	// ===============================
@@ -111,11 +113,11 @@ protected:
 	}
 private:
 
-	std::vector<PtrSpotLight> m_vctSpotLights;
-	std::vector<PtrPointLight> m_vctPointLights;
-	std::vector<PtrDirLight> m_vctDirLights;
-	std::vector<PtrMesh> m_vctOpaqueMeshs; //不透明mesh
-	std::vector<PtrMesh> m_vctTransparentMeshs; //透明mesh
+	std::vector<SpotLight*> m_vctSpotLights;
+	std::vector<PointLight*> m_vctPointLights;
+	std::vector<DirectionalLight*> m_vctDirLights;
+	std::vector<Mesh*> m_vctOpaqueMeshs; //不透明mesh
+	std::vector<Mesh*> m_vctTransparentMeshs; //透明mesh
 	std::shared_ptr<AmbientLight> m_pAmbientLight;
 
 	// ===== structure dirty flag =====

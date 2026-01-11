@@ -9,6 +9,13 @@ class PhongMaterial :public Material
 public:
 	PhongMaterial();
 	~PhongMaterial();
+	void bind(Shader* pShader,
+		Camera* pCamera,
+		glm::mat3 normalMatrix,
+		const std::vector<SpotLight*>& vctSpotLight,
+		const std::vector<DirectionalLight*>& vctDirectionalLight,
+		const std::vector<PointLight*>& vctPointLight,
+		AmbientLight* pAmbientLight) override;
 	void setShiness(const float& fShiness) { m_fShiness = fShiness; }
 	void setDiffuseTexture(std::shared_ptr<Texture> pTexture) { m_pDiffuseTexture = pTexture; }
 	void setSpecularMaskTexture(std::shared_ptr<Texture> pTexture) { m_pSpecularMaskTexture = pTexture;}
